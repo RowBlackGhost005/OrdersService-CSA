@@ -1,8 +1,10 @@
 package com.marin.OrderService.entities;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 
-import java.sql.Timestamp;
+import java.sql.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
@@ -16,19 +18,20 @@ public class Order {
     private int userId;
 
     @Column(name = "order_date")
-    private Timestamp orderDate;
+    private LocalDateTime orderDate;
 
     private String status;
 
     private float total;
 
     @OneToMany(mappedBy = "id" , cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @JsonManagedReference
     private List<OrderDetails> orderDetails;
 
     public Order() {
     }
 
-    public Order(int id, int userId, Timestamp orderDate, String status, float total, List<OrderDetails> orderDetails) {
+    public Order(int id, int userId, LocalDateTime orderDate, String status, float total, List<OrderDetails> orderDetails) {
         this.id = id;
         this.userId = userId;
         this.orderDate = orderDate;
@@ -53,11 +56,11 @@ public class Order {
         this.userId = userId;
     }
 
-    public Timestamp getOrderDate() {
+    public LocalDateTime getOrderDate() {
         return orderDate;
     }
 
-    public void setOrderDate(Timestamp orderDate) {
+    public void setOrderDate(LocalDateTime orderDate) {
         this.orderDate = orderDate;
     }
 
@@ -84,4 +87,12 @@ public class Order {
     public void setOrderDetails(List<OrderDetails> orderDetails) {
         this.orderDetails = orderDetails;
     }
+
+    @PrePersist
+    protected void onCreate() {
+        if (this.orderDate == null) {
+            this.orderDate = LocalDateTime.now();
+        }
+    }
+
 }

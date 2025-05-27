@@ -2,7 +2,7 @@ CREATE TABLE IF NOT EXISTS Orders (
     id INT AUTO_INCREMENT,
     user_id INT NOT NULL,
     order_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    status VARCHAR(16) CHECK (status IN ('Ordered' , "Processing" , "Shipped" , "Delivered" , "Cancelled")) DEFAULT 'Ordered',
+    status ENUM('ORDERED', 'PROCESSING', 'SHIPPED', 'DELIVERED' , 'CANCELLED') NOT NULL DEFAULT 'ORDERED',
     total DECIMAL(8,2) NOT NULL,
     PRIMARY KEY (id)
 );

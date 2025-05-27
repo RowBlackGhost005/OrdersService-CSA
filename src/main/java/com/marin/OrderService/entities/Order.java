@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 
 import java.sql.Date;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -12,6 +13,7 @@ import java.util.List;
 public class Order {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
 
     @Column(name = "user_id")
@@ -20,24 +22,25 @@ public class Order {
     @Column(name = "order_date")
     private LocalDateTime orderDate;
 
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private OrderStatus status = OrderStatus.ORDERED;
 
     private float total;
 
-    @OneToMany(mappedBy = "id" , cascade = CascadeType.ALL , fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "order" , cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonManagedReference
-    private List<OrderDetails> orderDetails;
+    private List<OrderDetails> orderDetails = new ArrayList<>();
 
     public Order() {
     }
 
-    public Order(int id, int userId, LocalDateTime orderDate, String status, float total, List<OrderDetails> orderDetails) {
+    public Order(int id, int userId, LocalDateTime orderDate, OrderStatus status, float total, List<OrderDetails> orderDetails) {
         this.id = id;
         this.userId = userId;
         this.orderDate = orderDate;
         this.status = status;
         this.total = total;
-        this.orderDetails = orderDetails;
+        //this.orderDetails = orderDetails;
     }
 
     public int getId() {
@@ -64,11 +67,11 @@ public class Order {
         this.orderDate = orderDate;
     }
 
-    public String getStatus() {
+    public OrderStatus getStatus() {
         return status;
     }
 
-    public void setStatus(String status) {
+    public void setStatus(OrderStatus status) {
         this.status = status;
     }
 

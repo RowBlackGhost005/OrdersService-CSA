@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.AuthorityUtils;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -34,7 +35,7 @@ public class JwtFilter extends OncePerRequestFilter {
 
             Claims claims = jwtUtil.getTokenClaims(token);
 
-            if(claims != null){
+            if(jwtUtil.validateToken(token) && claims != null){
                 List<?> rolesRaw = claims.get("roles", List.class);
                 List<String> roles = rolesRaw.stream().map(Object::toString).toList();
 
@@ -42,6 +43,7 @@ public class JwtFilter extends OncePerRequestFilter {
                         claims.getSubject(), null , AuthorityUtils.createAuthorityList(roles)
                 );
 
+                auth.setDetails(new WebAuthenticationDetailsSource().buildDetails(request));
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         }
